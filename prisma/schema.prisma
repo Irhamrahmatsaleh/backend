@@ -1,0 +1,105 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model following {
+  id          Int      @id(map: "PK_c76c6e044bdf76ecf8bfb82a645") @default(autoincrement())
+  followed_id Int
+  follower_id Int
+  created_at  DateTime @default(dbgenerated("('now'::text)::timestamp(6) with time zone")) @db.Timestamp(6)
+  update_at   DateTime @default(dbgenerated("('now'::text)::timestamp(6) with time zone")) @updatedAt @db.Timestamp(6)
+  followed    users    @relation(name: "followed_id", fields: [followed_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "FK_4a5bd9db5bd73571f8c45717718")
+  follower    users    @relation(name: "follower_id", fields: [follower_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "FK_4fdfeb1ef6cdf3e0a6170a57b3b")
+}
+
+model likes {
+  id         Int      @id(map: "PK_a9323de3f8bced7539a794b4a37") @default(autoincrement())
+  user_id    Int
+  thread_id  Int
+  created_at DateTime @default(dbgenerated("('now'::text)::timestamp(6) with time zone")) @db.Timestamp(6)
+  created_by Int?
+  update_at  DateTime @default(dbgenerated("('now'::text)::timestamp(6) with time zone")) @updatedAt @db.Timestamp(6)
+  updated_by Int?
+  users      users    @relation(fields: [user_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "FK_3f519ed95f775c781a254089171")
+  threads    threads  @relation(fields: [thread_id], references: [id], onDelete: Cascade, map: "FK_dfee0c14f2a697eeb0b0bfc50cc")
+}
+
+model likesreplies {
+  id         Int      @id @default(autoincrement())
+  user_id    Int
+  reply_id   Int
+  created_at DateTime @default(dbgenerated("('now'::text)::timestamp(6) with time zone")) @db.Timestamp(6)
+  created_by Int?
+  update_at  DateTime @default(dbgenerated("('now'::text)::timestamp(6) with time zone")) @updatedAt @db.Timestamp(6)
+  updated_by Int?
+  users      users    @relation(fields: [user_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  replies    replies  @relation(fields: [reply_id], references: [id], onDelete: Cascade)
+}
+
+model replies {
+  id            Int            @id(map: "PK_08f619ebe431e27e9d206bea132") @default(autoincrement())
+  user_id       Int
+  thread_id     Int?
+  parent_id     Int?           
+  image         String?        @db.VarChar
+  content       String?        @db.VarChar
+  created_at    DateTime       @default(dbgenerated("('now'::text)::timestamp(6) with time zone")) @db.Timestamp(6)
+  created_by    Int?
+  updated_at    DateTime       @default(dbgenerated("('now'::text)::timestamp(6) with time zone")) @updatedAt @db.Timestamp(6)
+  updated_by    Int?
+  threads       threads?        @relation(fields: [thread_id], references: [id], onDelete: Cascade, map: "FK_1af58ca9000874da2171004d164")
+  users         users          @relation(fields: [user_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "FK_c961efa3687d100ed22cd409534")
+  likesreplies  likesreplies[]
+  repliesNested replies?       @relation("ChildReplies", fields: [parent_id], references: [id], onDelete: Cascade)
+  childReplies  replies[]       @relation("ChildReplies")
+}
+
+model threads {
+  id                Int       @id(map: "PK_d8a74804c34fc3900502cd27275") @default(autoincrement())
+  image             String?   @db.VarChar
+  content           String?   @db.VarChar
+  number_of_replies Int?      @default(0)
+  updated_by        Int?
+  created_at        DateTime  @default(dbgenerated("('now'::text)::timestamp(6) with time zone")) @db.Timestamp(6)
+  update_at         DateTime  @default(dbgenerated("('now'::text)::timestamp(6) with time zone")) @updatedAt @db.Timestamp(6)
+  created_by        Int?
+  likes             likes[]
+  replies           replies[]
+  users             users?    @relation(fields: [created_by], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "FK_d8d74bcfa3ef439fa3742445e28")
+}
+
+model users {
+  id            Int            @id(map: "PK_a3ffb1c0c8416b9fc6f907b7433") @default(autoincrement())
+  username      String?        @unique(map: "UQ_fe0bb3f6520ee0469504521e710") @db.VarChar
+  full_name     String?        @db.VarChar
+  email         String         @unique(map: "UQ_97672ac88f789774dd47f7c8be3") @db.VarChar
+  password      String         @db.VarChar
+  photo_profile String?        @default("https://cdn-icons-png.flaticon.com/128/847/847969.png") @db.VarChar
+  bio           String?        @db.VarChar
+  created_at    DateTime       @default(dbgenerated("('now'::text)::timestamp(6) with time zone")) @db.Timestamp(6)
+  created_by    String?        @db.VarChar
+  updated_at    DateTime       @default(dbgenerated("('now'::text)::timestamp(6) with time zone")) @updatedAt @db.Timestamp(6)
+  updated_by    String?        @db.VarChar
+  isverified    Boolean        @default(false)
+  follower      following[]    @relation("follower_id")
+  following     following[]    @relation("followed_id")
+  likes         likes[]
+  replies       replies[]
+  threads       threads[]
+  likesreplies  likesreplies[]
+}
+
+model verification {
+  id         Int      @id @default(autoincrement())
+  token      String   @unique
+  type       String   @default("EMAIL")
+  created_at DateTime @default(now())
+  updated_at DateTime @default(now()) @updatedAt
+
+  @@map("verifications")
+}
