@@ -15,7 +15,10 @@ const router = Express.Router();
 
 // Konfigurasi CORS
 const corsOptions = {
-    origin: ["https://try-seven-xi.vercel.app"], // URL frontend Vercel kamu
+    origin: [
+        "http://localhost:5174",
+        "https://try-seven-xi.vercel.app"
+    ], // URL frontend Vercel kamu
     methods: ["GET", "POST", "PATCH", "DELETE", "OPTIONS"],
     allowedHeaders: ["Content-Type", "Authorization"],
     credentials: true, // Mengizinkan pengiriman cookies dan header autentikasi
