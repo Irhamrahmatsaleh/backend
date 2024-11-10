@@ -10,7 +10,7 @@ const doc = {
   },
   servers: [
     {
-      url: "https://b54-circleapp-production.up.railway.app"
+      url: "https://backend-production-f9524.up.railway.app"
     },
     {
       url: "http://localhost:5000"
@@ -19,9 +19,9 @@ const doc = {
   components: {
     schemas: {
       registerSchema: {
-          $full_name : 'John Doe',
-          $email: 'test@test.com',
-          $password: 'pass1234'
+        $full_name: 'John Doe',
+        $email: 'test@test.com',
+        $password: 'pass1234'
       },
       loginSchema: {
         $email: 'test@gmail.com',
@@ -30,10 +30,10 @@ const doc = {
       threadSchema: {
         $content: 'This is some threads content',
       },
-      requestPasswordSchema : {
+      requestPasswordSchema: {
         $email: 'Email to be changed password'
       },
-      resetPasswordSchema : {
+      resetPasswordSchema: {
         $password: 'This is your new password'
       }
     },
@@ -52,7 +52,7 @@ const doc = {
 const outputFile = './swagger-generated.json';
 const routes = ['./index.ts'];
 
-/* NOTE: If you are using the express Router, you must pass in the 'routes' only the 
+/* NOTE: If you are using the express Router, you must pass in the 'routes' only the
 root file where the route starts, such as index.js, app.js, routes.js, etc ... */
 
 swaggerAutogen(outputFile, routes, doc);
