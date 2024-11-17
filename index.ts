@@ -42,7 +42,7 @@ app.use(Express.urlencoded({ extended: false }));
 app.use(Express.json());
 // app.use(Cors())
 app.use(Cors({
-    origin:'https://try-mu-ashy.vercel.app', // Daftar domain frontend Anda
+    origin:['https://try-mu-ashy.vercel.app','http://localhost:5173'] // Daftar domain frontend Anda
     methods: ['GET', 'POST', 'PATCH', 'DELETE'],
     credentials: true,
 }));
