@@ -42,10 +42,11 @@ app.use(Express.urlencoded({ extended: false }));
 app.use(Express.json());
 // app.use(Cors())
 app.use(Cors({
-    origin: 'http://localhost:5173', // Ganti dengan domain frontend Anda
+    origin: ['http://localhost:5173', 'https://try-mu-ashy.vercel.app'], // Daftar domain frontend Anda
     methods: ['GET', 'POST', 'PATCH', 'DELETE'],
     credentials: true,
 }));
+
 app.use("/api/v1", router);
 router.use(limiter);
 router.use('/api-docs', swaggerUi.serve);
